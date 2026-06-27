@@ -2,295 +2,281 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>SOMA Triage</title>
+<title>SOMA - Triage</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-body {
-  margin:0;
-  font-family: Arial;
-  background:#eef2f5;
-  overflow:hidden;
-}
-
-.wrapper {
-  display:flex;
-  width:700%;
-  transition:0.4s;
-}
-
-.card {
-  width:100vw;
-  height:100vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-}
-
-.box {
-  background:white;
-  padding:30px;
-  border-radius:12px;
-  width:90%;
-  max-width:400px;
-  text-align:center;
-}
-
-button {
-  width:100%;
-  padding:12px;
-  margin-top:10px;
-  border:none;
-  border-radius:6px;
-  background:#007bff;
-  color:white;
-}
-
-input, select {
-  width:100%;
-  padding:10px;
-  margin-top:10px;
-}
-
-.error {
-  color:red;
-  font-size:13px;
-  display:none;
-}
+body { font-family: Arial; background:#f5f5f5; padding:20px; }
+.container { max-width:650px; margin:auto; background:white; padding:20px; border-radius:10px; }
+.hidden { display:none; }
+button { margin-top:15px; padding:12px; width:100%; }
+input, select { width:100%; padding:10px; margin-top:10px; }
+h2 { margin-top:20px; }
 </style>
-
 </head>
 
 <body>
+<div class="container">
 
-<div class="wrapper" id="wrapper">
+<h1>SOMA</h1>
 
-  <!-- STEP 0 -->
-  <div class="card">
-    <div class="box">
-      <h2>¿Cómo querés la atención?</h2>
-      <button onclick="setTipo('clinica')">En clínica</button>
-      <button onclick="setTipo('individual')">Individual</button>
-      <button onclick="setTipo('grupal')">Grupal</button>
-    </div>
-  </div>
+<!-- STEP 0 -->
+<div id="step0">
+<h2>¿Dónde querés recibir tu experiencia?</h2>
+<button onclick="setMode('clinic')">En clínica</button>
+<button onclick="setMode('home')">AT HOME</button>
+</div>
 
-  <!-- STEP 1: CONTEXTO INDIVIDUAL -->
-  <div class="card">
-    <div class="box">
-      <h2>¿Ya sos paciente?</h2>
-      <button onclick="setContinuidad(true)">Sí</button>
-      <button onclick="setContinuidad(false)">No</button>
-    </div>
-  </div>
+<!-- STEP 1 HOME TYPE -->
+<div id="step1_home" class="hidden">
+<h2>¿Es para vos o para un grupo?</h2>
+<button onclick="setHomeType('individual')">Individual</button>
+<button onclick="setHomeType('group')">Grupo</button>
+</div>
 
-  <!-- STEP 2: MOTIVO -->
-  <div class="card">
-    <div class="box">
-      <h2>Motivo de consulta</h2>
+<!-- STEP 2 IDENTIFICACION -->
+<div id="step2" class="hidden">
+<h2>Datos personales</h2>
 
-      <select id="motivo">
-        <option value="">Seleccionar</option>
-        <option>Dolor</option>
-        <option>Rehabilitación</option>
-        <option>Control</option>
-        <option>Otro</option>
-      </select>
+<input placeholder="Nombre completo" id="name">
+<input placeholder="Edad" type="number" id="age">
+<input placeholder="Teléfono" id="phone">
+<input placeholder="Email" id="email">
 
-      <div class="error" id="errorMotivo">Seleccioná una opción</div>
+<select id="first_time">
+<option value="">¿Primera vez en SOMA?</option>
+<option value="yes">Sí</option>
+<option value="no">No</option>
+</select>
 
-      <button onclick="validarMotivo()">Continuar</button>
-    </div>
-  </div>
+<button onclick="nextTreatment()">Continuar</button>
+</div>
 
-  <!-- STEP 3: INTENSIDAD -->
-  <div class="card">
-    <div class="box">
-      <h2>Intensidad</h2>
+<!-- STEP 3 TRATAMIENTO -->
+<div id="step3" class="hidden">
+<h2>Tratamiento</h2>
 
-      <select id="intensidad">
-        <option value="">Seleccionar</option>
-        <option>Leve</option>
-        <option>Moderado</option>
-        <option>Severo</option>
-      </select>
+<select id="treatment">
+<option value="">Seleccionar</option>
+<option value="energy">Energy</option>
+<option value="recovery">Recovery</option>
+<option value="stress">Stress</option>
+<option value="skin">Skin</option>
+<option value="longevity">Longevidad</option>
+<option value="unknown">No estoy seguro</option>
+</select>
 
-      <div class="error" id="errorIntensidad">Seleccioná una opción</div>
+<button onclick="nextClinical()">Continuar</button>
+</div>
 
-      <button onclick="validarIntensidad()">Continuar</button>
-    </div>
-  </div>
+<!-- STEP 4 TRIAGE -->
+<div id="step4" class="hidden">
+<h2>Evaluación clínica</h2>
 
-  <!-- STEP 4: TIEMPO -->
-  <div class="card">
-    <div class="box">
-      <h2>Tiempo de evolución</h2>
+<label>Enfermedad actual</label>
+<select id="q1"><option value="no">No</option><option value="yes">Sí</option></select>
 
-      <select id="tiempo">
-        <option value="">Seleccionar</option>
-        <option>Agudo (< 7 días)</option>
-        <option>Subagudo</option>
-        <option>Crónico</option>
-      </select>
+<label>Embarazo / lactancia</label>
+<select id="q2"><option value="no">No</option><option value="yes">Sí</option></select>
 
-      <div class="error" id="errorTiempo">Seleccioná una opción</div>
+<label>Alergias medicamentosas</label>
+<select id="q3"><option value="no">No</option><option value="yes">Sí</option></select>
 
-      <button onclick="validarTiempo()">Continuar</button>
-    </div>
-  </div>
+<label>Patología crónica</label>
+<select id="q4"><option value="no">No</option><option value="yes">Sí</option></select>
 
-  <!-- STEP 5: DATOS -->
-  <div class="card">
-    <div class="box">
-      <h2>Datos del paciente</h2>
+<label>Medicación actual</label>
+<select id="q5"><option value="no">No</option><option value="yes">Sí</option></select>
 
-      <input id="nombre" placeholder="Nombre">
-      <input id="edad" type="number" placeholder="Edad">
+<label>Cirugía reciente</label>
+<select id="q6"><option value="no">No</option><option value="yes">Sí</option></select>
 
-      <div class="error" id="errorDatos">Completá los campos</div>
+<button onclick="nextLogistics()">Continuar</button>
+</div>
 
-      <button onclick="validarDatos()">Finalizar</button>
-    </div>
-  </div>
+<!-- STEP 5 LOGISTICA -->
+<div id="step5" class="hidden">
+<h2>Logística</h2>
 
-  <!-- STEP 6: RESULTADO -->
-  <div class="card">
-    <div class="box">
-      <h2>Resultado</h2>
-      <div id="resultado"></div>
-    </div>
-  </div>
+<input placeholder="Dirección" id="address">
+
+<select id="place">
+<option value="">Tipo de lugar</option>
+<option>Casa</option>
+<option>Departamento</option>
+<option>Hotel</option>
+<option>Country</option>
+</select>
+
+<select id="space">
+<option value="">¿Espacio adecuado?</option>
+<option value="yes">Sí</option>
+<option value="no">No</option>
+</select>
+
+<button onclick="evaluateIndividual()">Evaluar</button>
+</div>
+
+<!-- STEP GROUP -->
+<div id="step_group" class="hidden">
+<h2>Evento grupal</h2>
+
+<input placeholder="Nombre organizador" id="g_name">
+<input placeholder="Teléfono" id="g_phone">
+
+<input placeholder="Dirección" id="g_address">
+
+<select id="g_type">
+<option value="">Tipo de evento</option>
+<option>Social</option>
+<option>Deportivo</option>
+<option>Recovery</option>
+</select>
+
+<input type="number" placeholder="Cantidad personas" id="g_size">
+
+<select id="g_risk">
+<option value="">¿Hay personas con patologías?</option>
+<option value="no">No</option>
+<option value="yes">Sí</option>
+</select>
+
+<button onclick="evaluateGroup()">Evaluar grupo</button>
+</div>
+
+<!-- CONSENT -->
+<div id="step_consent" class="hidden">
+<h2>Consentimiento</h2>
+
+<label><input type="checkbox" id="c1"> Comprendo que es tratamiento EV</label><br>
+<label><input type="checkbox" id="c2"> Declaro datos veraces</label><br>
+<label><input type="checkbox" id="c3"> Autorizo evaluación médica</label><br>
+
+<button onclick="finalStep()">Finalizar</button>
+</div>
+
+<!-- RESULT -->
+<div id="result" class="hidden">
+<h2>Resultado</h2>
+<p id="result_text"></p>
+</div>
 
 </div>
 
 <script>
 
-let current = 0;
-let data = {};
+let mode="", homeType="", riskLevel="green";
 
-function next(step){
-  current = step;
-  document.getElementById("wrapper").style.transform =
-    "translateX(-" + (step * 100) + "vw)";
+function setMode(m){
+mode=m;
+hide("step0");
+
+if(m==="home") show("step1_home");
+else show("step2");
 }
 
-/* STEP 0 */
+function setHomeType(t){
+homeType=t;
+hide("step1_home");
 
-function setTipo(tipo){
-  data.tipo = tipo;
-
-  if(tipo === "individual"){
-    next(1);
-  } else if(tipo === "grupal"){
-    generarGrupal();
-    next(6);
-  } else {
-    next(2);
-  }
+if(t==="group") show("step_group");
+else show("step2");
 }
 
-/* STEP 1 */
-
-function setContinuidad(valor){
-  data.continuidad = valor;
-  next(2);
+function nextTreatment(){
+if(val("age")<18){ alert("Menor de edad requiere evaluación médica"); return;}
+hide("step2");
+show("step3");
 }
 
-/* STEP 2 */
-
-function validarMotivo(){
-  let val = document.getElementById("motivo").value;
-  if(!val){
-    document.getElementById("errorMotivo").style.display="block";
-    return;
-  }
-  data.motivo = val;
-  next(3);
+function nextClinical(){
+hide("step3");
+show("step4");
 }
 
-/* STEP 3 */
-
-function validarIntensidad(){
-  let val = document.getElementById("intensidad").value;
-  if(!val){
-    document.getElementById("errorIntensidad").style.display="block";
-    return;
-  }
-  data.intensidad = val;
-  next(4);
+function nextLogistics(){
+hide("step4");
+show("step5");
 }
 
-/* STEP 4 */
+function evaluateIndividual(){
 
-function validarTiempo(){
-  let val = document.getElementById("tiempo").value;
-  if(!val){
-    document.getElementById("errorTiempo").style.display="block";
-    return;
-  }
-  data.tiempo = val;
-  next(5);
+// FLAGS
+let red = (val("q2")==="yes");
+let yellow = (val("q3")==="yes" || val("q4")==="yes" || val("q5")==="yes" || val("q6")==="yes");
+
+if(red) riskLevel="red";
+else if(yellow) riskLevel="yellow";
+else riskLevel="green";
+
+hide("step5");
+show("step_consent");
 }
 
-/* STEP 5 */
+function evaluateGroup(){
 
-function validarDatos(){
-  let n = document.getElementById("nombre").value.trim();
-  let e = document.getElementById("edad").value.trim();
+hide("step_group");
+show("result");
 
-  if(!n || !e){
-    document.getElementById("errorDatos").style.display="block";
-    return;
-  }
-
-  data.nombre = n;
-  data.edad = e;
-
-  generarResultado();
-  next(6);
+if(val("g_risk")==="yes"){
+result(`
+Grupo con posibles riesgos clínicos.<br><br>
+Cada participante deberá completar triage individual y será evaluado por el equipo médico.
+`);
+return;
 }
 
-/* RESULTADO */
-
-function generarResultado(){
-
-  let nivel = "Bajo";
-
-  if(data.intensidad === "Severo" || data.tiempo === "Agudo (< 7 días)"){
-    nivel = "Alto";
-  }
-
-  let texto = `
-    <p><b>${data.nombre}</b> (${data.edad})</p>
-    <p>${data.motivo} - ${data.intensidad}</p>
-    <p>Riesgo clínico: <b>${nivel}</b></p>
-  `;
-
-  if(data.tipo === "individual" && data.continuidad){
-    texto += `<p>Seguimiento directo sin teleconsulta.</p>`;
-  } else if(nivel === "Alto"){
-    texto += `<p>Se recomienda evaluación médica directa.</p>`;
-  } else {
-    texto += `<p>Posible resolución asincrónica.</p>`;
-  }
-
-  texto += `
-  <hr>
-  <p style="font-size:12px;color:gray;">
-  Este caso será evaluado por el equipo médico de SOMA.
-  </p>
-  `;
-
-  document.getElementById("resultado").innerHTML = texto;
+result(`
+Grupo apto para coordinación.<br><br>
+Se enviarán links individuales para validación médica previa.
+`);
 }
 
-/* GRUPAL */
+function finalStep(){
 
-function generarGrupal(){
-  document.getElementById("resultado").innerHTML = `
-    <p>Solicitud grupal recibida.</p>
-    <p>El equipo evaluará cobertura y modalidad.</p>
-  `;
+if(!c1.checked || !c2.checked || !c3.checked){
+alert("Debes aceptar los consentimientos");
+return;
 }
+
+hide("step_consent");
+show("result");
+
+// DECISION FINAL
+if(riskLevel==="red"){
+result(`
+Se requiere evaluación médica obligatoria antes de avanzar.
+`);
+return;
+}
+
+if(riskLevel==="yellow"){
+result(`
+Tu caso será evaluado por el equipo médico antes de la confirmación.
+`);
+return;
+}
+
+// GREEN
+if(val("first_time")==="yes" && mode==="home"){
+result(`
+Se requiere teleconsulta previa por ser tu primera vez en modalidad AT HOME.
+`);
+return;
+}
+
+result(`
+Tu solicitud fue recibida correctamente.<br><br>
+Nuestro equipo médico evaluará tu caso antes de la confirmación final del tratamiento.<br><br>
+En caso de ser necesario, podemos contactarte para una teleconsulta previa.<br><br>
+Una vez validado, coordinaremos la aplicación en tu domicilio.
+`);
+}
+
+function val(id){ return document.getElementById(id).value; }
+function show(id){ document.getElementById(id).classList.remove("hidden"); }
+function hide(id){ document.getElementById(id).classList.add("hidden"); }
+function result(t){ document.getElementById("result_text").innerHTML=t; }
 
 </script>
 

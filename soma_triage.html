@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>SOMA - Triage Inteligente</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { font-family: Arial; background:#f5f5f5; padding:20px; }
+    .container { max-width:600px; margin:auto; background:white; padding:20px; border-radius:10px; }
+    h2 { margin-top:20px; }
+    .hidden { display:none; }
+    button { margin-top:15px; padding:10px; width:100%; }
+    input, select { width:100%; padding:10px; margin-top:10px; }
+  </style>
+</head>
+
+<body>
+<div class="container">
+
+<h1>SOMA</h1>
+<p>Optimización personalizada</p>
+
+<!-- STEP 1 -->
+<div id="step1">
+  <h2>¿Dónde querés realizar tu tratamiento?</h2>
+  <button onclick="selectMode('clinic')">En clínica</button>
+  <button onclick="selectMode('home')">AT HOME</button>
+</div>
+
+<!-- STEP 2 AT HOME -->
+<div id="step2_home" class="hidden">
+  <h2>Modalidad AT HOME</h2>
+  <button onclick="selectHomeType('individual')">Individual</button>
+  <button onclick="selectHomeType('group')">Grupal</button>
+</div>
+
+<!-- STEP 3 -->
+<div id="step3" class="hidden">
+  <h2>Información básica</h2>
+
+  <label>¿Es tu primera vez en SOMA?</label>
+  <select id="first_time">
+    <option value="">Seleccionar</option>
+    <option value="yes">Sí</option>
+    <option value="no">No</option>
+  </select>
+
+  <label>Edad</label>
+  <input type="number" id="age">
+
+  <label>¿Tenés alguna enfermedad activa?</label>
+  <select id="disease">
+    <option value="">Seleccionar</option>
+    <option value="no">No</option>
+    <option value="yes">Sí</option>
+  </select>
+
+  <label>¿Alergias medicamentosas?</label>
+  <select id="allergies">
+    <option value="">Seleccionar</option>
+    <option value="no">No</option>
+    <option value="yes">Sí</option>
+  </select>
+
+  <label>¿Estás embarazada o en lactancia?</label>
+  <select id="pregnancy">
+    <option value="">Seleccionar</option>
+    <option value="no">No</option>
+    <option value="yes">Sí</option>
+  </select>
+
+  <button onclick="evaluate()">Continuar</button>
+</div>
+
+<!-- STEP GROUP -->
+<div id="step_group" class="hidden">
+  <h2>Grupo</h2>
+  <label>Cantidad de personas</label>
+  <input type="number" id="group_size">
+
+  <p>Cada integrante deberá completar su triage individual antes del turno.</p>
+
+  <button onclick="finishGroup()">Continuar</button>
+</div>
+
+<!-- RESULT -->
+<div id="result" class="hidden">
+  <h2>Resultado</h2>
+  <p id="result_text"></p>
+</div>
+
+</div>
+
+<script>
+let mode = "";
+let homeType = "";
+
+function selectMode(selected){
+  mode = selected;
+  document.getElementById("step1").classList.add("hidden");
+
+  if(selected === "home"){
+    document.getElementById("step2_home").classList.remove("hidden");
+  } else {
+    document.getElementById("step3").classList.remove("hidden");
+  }
+}
+
+function selectHomeType(type){
+  homeType = type;
+  document.getElementById("step2_home").classList.add("hidden");
+
+  if(type === "group"){
+    document.getElementById("step_group").classList.remove("hidden");
+  } else {
+    document.getElementById("step3").classList.remove("hidden");
+  }
+}
+
+function finishGroup(){
+  document.getElementById("step_group").classList.add("hidden");
+  document.getElementById("result").classList.remove("hidden");
+
+  document.getElementById("result_text").innerHTML = `
+  Reserva grupal iniciada.<br><br>
+  Cada participante deberá completar su triage individual.<br><br>
+  El equipo médico evaluará cada caso antes de la confirmación definitiva.
+  `;
+}
+
+function evaluate(){
+
+  let first = document.getElementById("first_time").value;
+  let disease = document.getElementById("disease").value;
+  let allergies = document.getElementById("allergies").value;
+  let pregnancy = document.getElementById("pregnancy").value;
+
+  document.getElementById("step3").classList.add("hidden");
+  document.getElementById("result").classList.remove("hidden");
+
+  // FLAGS
+  if(disease === "yes" || allergies === "yes" || pregnancy === "yes"){
+    document.getElementById("result_text").innerHTML = `
+    Necesitamos una evaluación médica previa.<br><br>
+    Nuestro equipo revisará tu caso y te contactará para definir el tratamiento más seguro.
+    `;
+    return;
+  }
+
+  // PRIMERA VEZ
+  if(first === "yes"){
+    document.getElementById("result_text").innerHTML = `
+    Es tu primera vez en SOMA.<br><br>
+    Antes del tratamiento, deberás realizar una breve teleconsulta médica.<br><br>
+    Esto nos permite personalizar y validar la intervención.
+    `;
+    return;
+  }
+
+  // OK DIRECTO
+  document.getElementById("result_text").innerHTML = `
+  Podés avanzar directamente con tu tratamiento.<br><br>
+
+  ⚠️ Validación médica asincrónica:<br><br>
+  El equipo médico de SOMA evaluará la información proporcionada antes de la confirmación final del tratamiento.<br><br>
+
+  En caso de detectar alguna contraindicación o necesidad de ajuste, nos pondremos en contacto con vos previamente.<br><br>
+
+  Al asistir, se realizará una verificación clínica breve antes de iniciar el procedimiento.
+  `;
+}
+</script>
+
+</body>
+</html>

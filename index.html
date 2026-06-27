@@ -1,17 +1,18 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>SOMA - Triage Inteligente</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body { font-family: Arial; background:#f5f5f5; padding:20px; }
-    .container { max-width:600px; margin:auto; background:white; padding:20px; border-radius:10px; }
-    h2 { margin-top:20px; }
-    .hidden { display:none; }
-    button { margin-top:15px; padding:10px; width:100%; }
-    input, select { width:100%; padding:10px; margin-top:10px; }
-  </style>
+<meta charset="UTF-8">
+<title>SOMA - Triage Inteligente</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body { font-family: Arial; background:#f5f5f5; padding:20px; }
+.container { max-width:650px; margin:auto; background:white; padding:20px; border-radius:10px; }
+.hidden { display:none; }
+button { margin-top:15px; padding:12px; width:100%; }
+input, select { width:100%; padding:10px; margin-top:10px; }
+h2 { margin-top:20px; }
+</style>
 </head>
 
 <body>
@@ -22,153 +23,221 @@
 
 <!-- STEP 1 -->
 <div id="step1">
-  <h2>¿Dónde querés realizar tu tratamiento?</h2>
-  <button onclick="selectMode('clinic')">En clínica</button>
-  <button onclick="selectMode('home')">AT HOME</button>
+<h2>¿Dónde querés realizar tu tratamiento?</h2>
+<button onclick="setMode('clinic')">En clínica</button>
+<button onclick="setMode('home')">AT HOME</button>
 </div>
 
-<!-- STEP 2 AT HOME -->
+<!-- STEP 2 HOME -->
 <div id="step2_home" class="hidden">
-  <h2>Modalidad AT HOME</h2>
-  <button onclick="selectHomeType('individual')">Individual</button>
-  <button onclick="selectHomeType('group')">Grupal</button>
+<h2>Modalidad AT HOME</h2>
+<button onclick="setHome('individual')">Individual</button>
+<button onclick="setHome('group')">Grupal</button>
 </div>
 
-<!-- STEP 3 -->
-<div id="step3" class="hidden">
-  <h2>Información básica</h2>
+<!-- STEP OBJETIVO -->
+<div id="step_goal" class="hidden">
+<h2>¿Qué querés mejorar?</h2>
+<select id="goal">
+<option value="">Seleccionar</option>
+<option value="energia">Energía</option>
+<option value="estres">Estrés</option>
+<option value="recovery">Recuperación</option>
+<option value="longevidad">Longevidad</option>
+</select>
 
-  <label>¿Es tu primera vez en SOMA?</label>
-  <select id="first_time">
-    <option value="">Seleccionar</option>
-    <option value="yes">Sí</option>
-    <option value="no">No</option>
-  </select>
-
-  <label>Edad</label>
-  <input type="number" id="age">
-
-  <label>¿Tenés alguna enfermedad activa?</label>
-  <select id="disease">
-    <option value="">Seleccionar</option>
-    <option value="no">No</option>
-    <option value="yes">Sí</option>
-  </select>
-
-  <label>¿Alergias medicamentosas?</label>
-  <select id="allergies">
-    <option value="">Seleccionar</option>
-    <option value="no">No</option>
-    <option value="yes">Sí</option>
-  </select>
-
-  <label>¿Estás embarazada o en lactancia?</label>
-  <select id="pregnancy">
-    <option value="">Seleccionar</option>
-    <option value="no">No</option>
-    <option value="yes">Sí</option>
-  </select>
-
-  <button onclick="evaluate()">Continuar</button>
+<button onclick="nextBasic()">Continuar</button>
 </div>
 
-<!-- STEP GROUP -->
+<!-- STEP CLINICO -->
+<div id="step_basic" class="hidden">
+
+<h2>Información clínica</h2>
+
+<label>¿Es tu primera vez en SOMA?</label>
+<select id="first_time">
+<option value="">Seleccionar</option>
+<option value="yes">Sí</option>
+<option value="no">No</option>
+</select>
+
+<label>Edad</label>
+<input type="number" id="age">
+
+<label>Enfermedades</label>
+<select id="disease">
+<option value="">Seleccionar</option>
+<option value="no">No</option>
+<option value="yes">Sí</option>
+</select>
+
+<label>Alergias medicamentosas</label>
+<select id="allergies">
+<option value="">Seleccionar</option>
+<option value="no">No</option>
+<option value="yes">Sí</option>
+</select>
+
+<label>Embarazo / lactancia</label>
+<select id="pregnancy">
+<option value="">Seleccionar</option>
+<option value="no">No</option>
+<option value="yes">Sí</option>
+</select>
+
+<button onclick="evaluateIndividual()">Evaluar</button>
+</div>
+
+<!-- STEP GROUP DETALLADO -->
 <div id="step_group" class="hidden">
-  <h2>Grupo</h2>
-  <label>Cantidad de personas</label>
-  <input type="number" id="group_size">
 
-  <p>Cada integrante deberá completar su triage individual antes del turno.</p>
+<h2>Coordinación grupal</h2>
 
-  <button onclick="finishGroup()">Continuar</button>
+<label>Cantidad de personas</label>
+<input type="number" id="group_size">
+
+<label>Ubicación</label>
+<input type="text" id="location">
+
+<label>Fecha deseada</label>
+<input type="date" id="date">
+
+<label>¿Todos son mayores de 18?</label>
+<select id="adults">
+<option value="">Seleccionar</option>
+<option value="yes">Sí</option>
+<option value="no">No</option>
+</select>
+
+<label>¿Alguno presenta patologías relevantes?</label>
+<select id="group_risk">
+<option value="">Seleccionar</option>
+<option value="no">No</option>
+<option value="yes">Sí</option>
+</select>
+
+<p>Cada participante completará su triage individual antes de la confirmación.</p>
+
+<button onclick="evaluateGroup()">Continuar</button>
+
 </div>
 
 <!-- RESULT -->
 <div id="result" class="hidden">
-  <h2>Resultado</h2>
-  <p id="result_text"></p>
+<h2>Resultado</h2>
+<p id="result_text"></p>
 </div>
 
 </div>
 
 <script>
+
 let mode = "";
-let homeType = "";
+let home = "";
 
-function selectMode(selected){
-  mode = selected;
-  document.getElementById("step1").classList.add("hidden");
+function setMode(m){
+mode = m;
+hide("step1");
 
-  if(selected === "home"){
-    document.getElementById("step2_home").classList.remove("hidden");
-  } else {
-    document.getElementById("step3").classList.remove("hidden");
-  }
+if(m === "home") show("step2_home");
+else show("step_goal");
 }
 
-function selectHomeType(type){
-  homeType = type;
-  document.getElementById("step2_home").classList.add("hidden");
+function setHome(h){
+home = h;
+hide("step2_home");
 
-  if(type === "group"){
-    document.getElementById("step_group").classList.remove("hidden");
-  } else {
-    document.getElementById("step3").classList.remove("hidden");
-  }
+if(h === "group") show("step_group");
+else show("step_goal");
 }
 
-function finishGroup(){
-  document.getElementById("step_group").classList.add("hidden");
-  document.getElementById("result").classList.remove("hidden");
-
-  document.getElementById("result_text").innerHTML = `
-  Reserva grupal iniciada.<br><br>
-  Cada participante deberá completar su triage individual.<br><br>
-  El equipo médico evaluará cada caso antes de la confirmación definitiva.
-  `;
+function nextBasic(){
+hide("step_goal");
+show("step_basic");
 }
 
-function evaluate(){
+function evaluateIndividual(){
 
-  let first = document.getElementById("first_time").value;
-  let disease = document.getElementById("disease").value;
-  let allergies = document.getElementById("allergies").value;
-  let pregnancy = document.getElementById("pregnancy").value;
+let first = val("first_time");
+let disease = val("disease");
+let allergies = val("allergies");
+let pregnancy = val("pregnancy");
+let goal = val("goal");
 
-  document.getElementById("step3").classList.add("hidden");
-  document.getElementById("result").classList.remove("hidden");
+hide("step_basic");
+show("result");
 
-  // FLAGS
-  if(disease === "yes" || allergies === "yes" || pregnancy === "yes"){
-    document.getElementById("result_text").innerHTML = `
-    Necesitamos una evaluación médica previa.<br><br>
-    Nuestro equipo revisará tu caso y te contactará para definir el tratamiento más seguro.
-    `;
-    return;
-  }
-
-  // PRIMERA VEZ
-  if(first === "yes"){
-    document.getElementById("result_text").innerHTML = `
-    Es tu primera vez en SOMA.<br><br>
-    Antes del tratamiento, deberás realizar una breve teleconsulta médica.<br><br>
-    Esto nos permite personalizar y validar la intervención.
-    `;
-    return;
-  }
-
-  // OK DIRECTO
-  document.getElementById("result_text").innerHTML = `
-  Podés avanzar directamente con tu tratamiento.<br><br>
-
-  ⚠️ Validación médica asincrónica:<br><br>
-  El equipo médico de SOMA evaluará la información proporcionada antes de la confirmación final del tratamiento.<br><br>
-
-  En caso de detectar alguna contraindicación o necesidad de ajuste, nos pondremos en contacto con vos previamente.<br><br>
-
-  Al asistir, se realizará una verificación clínica breve antes de iniciar el procedimiento.
-  `;
+// RIESGO
+if(disease === "yes" || allergies === "yes" || pregnancy === "yes"){
+result(`
+Se requiere evaluación médica previa.<br><br>
+El equipo clínico revisará tu caso antes de definir el tratamiento.
+`);
+return;
 }
+
+// TELECONSULTA SOLO SI:
+if(first === "yes" && (mode === "home")){
+result(`
+Primera vez en modalidad AT HOME.<br><br>
+Se requiere una teleconsulta médica previa obligatoria.
+`);
+return;
+}
+
+// PASA A PROTOCOLO
+result(`
+Apto para protocolo de ${goal}.<br><br>
+
+✔ Validación médica asincrónica previa a confirmación.<br>
+✔ Verificación clínica breve antes del procedimiento.<br><br>
+
+El equipo médico evaluará tu caso y confirmará el tratamiento.
+`);
+}
+
+function evaluateGroup(){
+
+let risk = val("group_risk");
+
+hide("step_group");
+show("result");
+
+if(risk === "yes"){
+result(`
+El grupo requiere validación médica previa.<br><br>
+Nuestro equipo evaluará cada caso individual antes de confirmar.
+`);
+return;
+}
+
+result(`
+Solicitud grupal iniciada.<br><br>
+
+✔ Cada participante deberá completar triage individual.<br>
+✔ Validación médica asincrónica obligatoria.<br>
+✔ Confirmación final sujeta a revisión clínica.<br><br>
+
+Nos contactaremos para coordinar logística y aprobación médica.
+`);
+}
+
+function val(id){
+return document.getElementById(id).value;
+}
+
+function show(id){
+document.getElementById(id).classList.remove("hidden");
+}
+
+function hide(id){
+document.getElementById(id).classList.add("hidden");
+}
+
+function result(text){
+document.getElementById("result_text").innerHTML = text;
+}
+
 </script>
 
 </body>

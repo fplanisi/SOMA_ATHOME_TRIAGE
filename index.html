@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>SOMA - Triage Inteligente</title>
+<title>SOMA - Triage</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
@@ -19,22 +19,269 @@ h2 { margin-top:20px; }
 <div class="container">
 
 <h1>SOMA</h1>
-<p>Optimización personalizada</p>
 
-<!-- STEP 1 -->
-<div id="step1">
-<h2>¿Dónde querés realizar tu tratamiento?</h2>
+<!-- STEP 0 -->
+<div id="step0">
+<h2>¿Dónde querés recibir tu experiencia?</h2>
 <button onclick="setMode('clinic')">En clínica</button>
 <button onclick="setMode('home')">AT HOME</button>
 </div>
 
-<!-- STEP 2 HOME -->
-<div id="step2_home" class="hidden">
-<h2>Modalidad AT HOME</h2>
-<button onclick="setHome('individual')">Individual</button>
-<button onclick="setHome('group')">Grupal</button>
+<!-- STEP 1 HOME TYPE -->
+<div id="step1_home" class="hidden">
+<h2>¿Es para vos o para un grupo?</h2>
+<button onclick="setHomeType('individual')">Individual</button>
+<button onclick="setHomeType('group')">Grupo</button>
 </div>
 
+<!-- STEP 2 IDENTIFICACION -->
+<div id="step2" class="hidden">
+<h2>Datos personales</h2>
+
+<input placeholder="Nombre completo" id="name">
+<input placeholder="Edad" type="number" id="age">
+<input placeholder="Teléfono" id="phone">
+<input placeholder="Email" id="email">
+
+<select id="first_time">
+<option value="">¿Primera vez en SOMA?</option>
+<option value="yes">Sí</option>
+<option value="no">No</option>
+</select>
+
+<button onclick="nextTreatment()">Continuar</button>
+</div>
+
+<!-- STEP 3 TRATAMIENTO -->
+<div id="step3" class="hidden">
+<h2>Tratamiento</h2>
+
+<select id="treatment">
+<option value="">Seleccionar</option>
+<option value="energy">Energy</option>
+<option value="recovery">Recovery</option>
+<option value="stress">Stress</option>
+<option value="skin">Skin</option>
+<option value="longevity">Longevidad</option>
+<option value="unknown">No estoy seguro</option>
+</select>
+
+<button onclick="nextClinical()">Continuar</button>
+</div>
+
+<!-- STEP 4 TRIAGE -->
+<div id="step4" class="hidden">
+<h2>Evaluación clínica</h2>
+
+<label>Enfermedad actual</label>
+<select id="q1"><option value="no">No</option><option value="yes">Sí</option></select>
+
+<label>Embarazo / lactancia</label>
+<select id="q2"><option value="no">No</option><option value="yes">Sí</option></select>
+
+<label>Alergias medicamentosas</label>
+<select id="q3"><option value="no">No</option><option value="yes">Sí</option></select>
+
+<label>Patología crónica</label>
+<select id="q4"><option value="no">No</option><option value="yes">Sí</option></select>
+
+<label>Medicación actual</label>
+<select id="q5"><option value="no">No</option><option value="yes">Sí</option></select>
+
+<label>Cirugía reciente</label>
+<select id="q6"><option value="no">No</option><option value="yes">Sí</option></select>
+
+<button onclick="nextLogistics()">Continuar</button>
+</div>
+
+<!-- STEP 5 LOGISTICA -->
+<div id="step5" class="hidden">
+<h2>Logística</h2>
+
+<input placeholder="Dirección" id="address">
+
+<select id="place">
+<option value="">Tipo de lugar</option>
+<option>Casa</option>
+<option>Departamento</option>
+<option>Hotel</option>
+<option>Country</option>
+</select>
+
+<select id="space">
+<option value="">¿Espacio adecuado?</option>
+<option value="yes">Sí</option>
+<option value="no">No</option>
+</select>
+
+<button onclick="evaluateIndividual()">Evaluar</button>
+</div>
+
+<!-- STEP GROUP -->
+<div id="step_group" class="hidden">
+<h2>Evento grupal</h2>
+
+<input placeholder="Nombre organizador" id="g_name">
+<input placeholder="Teléfono" id="g_phone">
+
+<input placeholder="Dirección" id="g_address">
+
+<select id="g_type">
+<option value="">Tipo de evento</option>
+<option>Social</option>
+<option>Deportivo</option>
+<option>Recovery</option>
+</select>
+
+<input type="number" placeholder="Cantidad personas" id="g_size">
+
+<select id="g_risk">
+<option value="">¿Hay personas con patologías?</option>
+<option value="no">No</option>
+<option value="yes">Sí</option>
+</select>
+
+<button onclick="evaluateGroup()">Evaluar grupo</button>
+</div>
+
+<!-- CONSENT -->
+<div id="step_consent" class="hidden">
+<h2>Consentimiento</h2>
+
+<label><input type="checkbox" id="c1"> Comprendo que es tratamiento EV</label><br>
+<label><input type="checkbox" id="c2"> Declaro datos veraces</label><br>
+<label><input type="checkbox" id="c3"> Autorizo evaluación médica</label><br>
+
+<button onclick="finalStep()">Finalizar</button>
+</div>
+
+<!-- RESULT -->
+<div id="result" class="hidden">
+<h2>Resultado</h2>
+<p id="result_text"></p>
+</div>
+
+</div>
+
+<script>
+
+let mode="", homeType="", riskLevel="green";
+
+function setMode(m){
+mode=m;
+hide("step0");
+
+if(m==="home") show("step1_home");
+else show("step2");
+}
+
+function setHomeType(t){
+homeType=t;
+hide("step1_home");
+
+if(t==="group") show("step_group");
+else show("step2");
+}
+
+function nextTreatment(){
+if(val("age")<18){ alert("Menor de edad requiere evaluación médica"); return;}
+hide("step2");
+show("step3");
+}
+
+function nextClinical(){
+hide("step3");
+show("step4");
+}
+
+function nextLogistics(){
+hide("step4");
+show("step5");
+}
+
+function evaluateIndividual(){
+
+// FLAGS
+let red = (val("q2")==="yes");
+let yellow = (val("q3")==="yes" || val("q4")==="yes" || val("q5")==="yes" || val("q6")==="yes");
+
+if(red) riskLevel="red";
+else if(yellow) riskLevel="yellow";
+else riskLevel="green";
+
+hide("step5");
+show("step_consent");
+}
+
+function evaluateGroup(){
+
+hide("step_group");
+show("result");
+
+if(val("g_risk")==="yes"){
+result(`
+Grupo con posibles riesgos clínicos.<br><br>
+Cada participante deberá completar triage individual y será evaluado por el equipo médico.
+`);
+return;
+}
+
+result(`
+Grupo apto para coordinación.<br><br>
+Se enviarán links individuales para validación médica previa.
+`);
+}
+
+function finalStep(){
+
+if(!c1.checked || !c2.checked || !c3.checked){
+alert("Debes aceptar los consentimientos");
+return;
+}
+
+hide("step_consent");
+show("result");
+
+// DECISION FINAL
+if(riskLevel==="red"){
+result(`
+Se requiere evaluación médica obligatoria antes de avanzar.
+`);
+return;
+}
+
+if(riskLevel==="yellow"){
+result(`
+Tu caso será evaluado por el equipo médico antes de la confirmación.
+`);
+return;
+}
+
+// GREEN
+if(val("first_time")==="yes" && mode==="home"){
+result(`
+Se requiere teleconsulta previa por ser tu primera vez en modalidad AT HOME.
+`);
+return;
+}
+
+result(`
+Tu solicitud fue recibida correctamente.<br><br>
+Nuestro equipo médico evaluará tu caso antes de la confirmación final del tratamiento.<br><br>
+En caso de ser necesario, podemos contactarte para una teleconsulta previa.<br><br>
+Una vez validado, coordinaremos la aplicación en tu domicilio.
+`);
+}
+
+function val(id){ return document.getElementById(id).value; }
+function show(id){ document.getElementById(id).classList.remove("hidden"); }
+function hide(id){ document.getElementById(id).classList.add("hidden"); }
+function result(t){ document.getElementById("result_text").innerHTML=t; }
+
+</script>
+
+</body>
+</html>
 <!-- STEP OBJETIVO -->
 <div id="step_goal" class="hidden">
 <h2>¿Qué querés mejorar?</h2>
